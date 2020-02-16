@@ -1,0 +1,119 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: postal-config
+data:
+  postal.yml: |-
+    web:
+      host: {{ config.domain }}
+      protocol: https
+
+    general:
+      use_ip_pools: false
+      exception_url: {{ config.general.exception_url }}
+      maximum_delivery_attempts: 18
+      maximum_hold_expiry_days: 7
+      suppression_list_removal_delay: 30
+      use_local_ns_for_domains: false
+
+    web_server:
+      bind_address: 0.0.0.0
+      port: 5000
+      max_threads: 5
+
+    fast_server:
+      enabled: false
+      bind_address:
+        - 0.0.0.0
+      port: 5001
+      ssl_port: 5002
+      proxy_protocol: false
+
+    main_db:
+      host: mariadb
+      port: 3306
+      username: postal
+      password: {{ secrets.mariadb.password }}
+      database: postal
+      pool_size: 5
+
+    logging:
+      stdout: true
+      max_log_file_size: 20
+      max_log_files: 10
+      greylog:
+        host: gelf.graylog
+        port: 12201
+
+    message_db:
+      host: mariadb
+      port: 3306
+      username: root
+      password: {{ secrets.mariadb.rootPassword }}
+      prefix: mdb
+
+    rabbitmq:
+      host: rabbitmq
+      port: 5672
+      username: postal
+      password: {{ secrets.rabbitmq.password }}
+      vhost: /
+
+    workers:
+      threads: 4
+
+    smtp_server:
+      port: 2525
+      tls_enabled: false
+      tls_certificate_path: # Defaults to config/smtp.cert
+      tls_private_key_path: # Defaults to config/smtp.key
+      tls_ciphers:
+      ssl_version: SSLv23
+      proxy_protocol: false
+      log_connect: true
+      strip_received_headers: false
+      max_message_size: 14 # size in Megabytes
+
+    dns:
+      mx_records:
+        - mx.{{ config.domain }}
+      smtp_server_hostname: {{ config.domain }}
+      spf_include: spf.{{ config.domain }}
+      return_path: rp.{{ config.domain }}
+      route_domain: routes.{{ config.domain }}
+      track_domain: track.{{ config.domain }}
+      helo_hostname: # By default, this will be the same as the `smtp_server_hostname`
+      dkim_identifier: postal
+      domain_verify_prefix: postal-verification
+      custom_return_path_prefix: psrp
+
+    smtp:
+      host: smtp
+      port: 25
+      username: {{ config.smtp.username }}
+      password: {{ secrets.smtp.password }}
+      from_name: Postal
+      from_address: postal@{{ config.domain }}
+
+    rails:
+      environment: production
+      secret_key: {{ secrets.rails.secret_key }}
+
+    spamd:
+      enabled: false
+      host: 127.0.0.1
+      port: 783
+
+    clamav:
+      enabled: false
+      host: 127.0.0.1
+      port: 2000
+
+    smtp_client:
+      open_timeout: 30
+      read_timeout: 60
+
+  fast_server.key: {{ secrets.keys.fast_server.key | multiline }}
+  fast_server.cert: {{ secrets.keys.fast_server.certificate | multiline }}
+  lets_encrypt.pem: {{ secrets.keys.lets_encrypt | multiline }}
+  signing.key: {{ secrets.keys.signing | multiline }}

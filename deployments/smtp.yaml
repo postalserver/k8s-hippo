@@ -1,0 +1,43 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: smtp
+spec:
+  selector:
+    matchLabels:
+      process_type: smtp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        process_type: smtp
+    spec:
+      containers:
+        - name: smtp
+          image: "{{ images.main.url }}"
+          imagePullPolicy: Always
+          command:
+            - bundle
+            - exec
+            - rake
+            - postal:smtp_server
+          ports:
+            - containerPort: 2525
+          livenessProbe:
+            tcpSocket:
+              port: 2525
+            periodSeconds: 15
+            initialDelaySeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 2525
+            periodSeconds: 15
+            initialDelaySeconds: 5
+          volumeMounts:
+            - name: config
+              mountPath: /opt/postal/config
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: postal-config

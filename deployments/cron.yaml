@@ -1,0 +1,31 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cron
+spec:
+  selector:
+    matchLabels:
+      process_type: cron
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        process_type: cron
+    spec:
+      containers:
+        - name: cron
+          image: "{{ images.main.url }}"
+          imagePullPolicy: Always
+          command:
+            - bundle
+            - exec
+            - rake
+            - postal:cron
+          volumeMounts:
+            - name: config
+              mountPath: /opt/postal/config
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: postal-config

@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: web
+spec:
+  ports:
+    - port: 80
+      targetPort: 5000
+  selector:
+    process_type: web

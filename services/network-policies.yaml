@@ -1,0 +1,80 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: default-block-policy
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-namespace-traffic
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: "{{ namespace }}"
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-to-web
+spec:
+  podSelector:
+    matchLabels:
+      process_type: web
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            app.kubernetes.io/name: "ingress-nginx"
+      ports:
+        - protocol: TCP
+          port: 5000
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-to-smtp
+spec:
+  podSelector:
+    matchLabels:
+      process_type: smtp
+  ingress:
+    - from: []
+      ports:
+        - protocol: TCP
+          port: 2525
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-prometheus-traffic
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: prometheus
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-cert-manager-traffic
+spec:
+  podSelector:
+    matchLabels:
+      acme.cert-manager.io/http01-solver: "true"
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: cert-manager
+      - namespaceSelector:
+          matchLabels:
+            app.kubernetes.io/name: "ingress-nginx"

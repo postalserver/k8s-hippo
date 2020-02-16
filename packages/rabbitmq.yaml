@@ -1,0 +1,12 @@
+name: rabbitmq
+package: stable/rabbitmq
+values:
+  global:
+    storageClass: {{ config.storageClass }}
+  replicas: {{ config.services.rabbitmq.replicas | default: 1 }}
+  rabbitmq:
+    username: postal
+    password: {{ secrets.rabbitmq.password }}
+    erlangCookie: {{ secrets.rabbitmq.erlangCookie }}
+  metrics:
+    enabled: true

@@ -1,0 +1,35 @@
+config:
+  domain: postal.mydomain.com
+secrets:
+  mariadb:
+    _rootPassword:
+      type: password
+    _password:
+      type: password
+    _replicationPassword:
+      type: password
+
+  rabbitmq:
+    _password:
+      type: password
+    _erlangCookie:
+      type: password
+      length: 32
+
+  rails:
+    _secret_key:
+      type: hex
+      size: 64
+
+  keys:
+    _signing:
+      type: rsa
+      size: 1024
+
+    _lets_encrypt:
+      type: rsa
+      size: 2048
+
+    _fast_server:
+      type: certificate
+      key_size: 2048

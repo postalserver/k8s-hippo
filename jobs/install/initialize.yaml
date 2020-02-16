@@ -1,0 +1,34 @@
+# In this file you should define any jobs that should be executed
+# when you first wish to install your application. This may load
+# schema and data into your database (which must already have been
+# provided in the setup step).
+#
+# Any previous jobs with the same name will be removed before running
+# these jobs.
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: initialize
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: postal-initialize
+          image: "{{ images.main.url }}"
+          imagePullPolicy: Always
+          command:
+            - bundle
+            - exec
+            - bin/postal
+            - initialize
+          volumeMounts:
+            - name: config
+              mountPath: /opt/postal/config
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: postal-config

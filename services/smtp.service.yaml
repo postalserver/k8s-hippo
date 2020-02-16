@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: smtp
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+    - port: 25
+      targetPort: 2525
+  selector:
+    process_type: smtp

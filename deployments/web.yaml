@@ -1,0 +1,52 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      process_type: web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        process_type: web
+    spec:
+      containers:
+        - name: puma
+          image: "{{ images.main.url }}"
+          imagePullPolicy: Always
+          command:
+            - bundle
+            - exec
+            - puma
+            - -C
+            - config/puma.rb
+          ports:
+            - containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /login
+              port: 5000
+              httpHeaders:
+                - name: Host
+                  value: "{{ config.domain }}"
+            periodSeconds: 3
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: 5000
+              httpHeaders:
+                - name: Host
+                  value: "{{ config.domain }}"
+            periodSeconds: 3
+            initialDelaySeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /opt/postal/config
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: postal-config

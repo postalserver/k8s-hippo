@@ -1,0 +1,10 @@
+name: postal
+
+images:
+  main:
+    name: adamcooke/postal
+    tag: docker
+
+console:
+ deployment: worker
+ command: bundle exec rails console

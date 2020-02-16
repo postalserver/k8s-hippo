@@ -1,0 +1,18 @@
+name: mariadb
+package: stable/mariadb
+values:
+  global:
+    storageClass: {{ config.storageClass }}
+  metrics:
+    enabled: true
+  rootUser:
+    password: {{ secrets.mariadb.rootPassword }}
+    injectSecretsAsVolume: true
+  db:
+    name: postal
+    user: postal
+    password: {{ secrets.mariadb.password }}
+    injectSecretsAsVolume: true
+  replication:
+    enabled: false
+
