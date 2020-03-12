@@ -16,3 +16,7 @@ commands:
     target: pod/mariadb-master-0
     command: "mysql -u root -p{{secrets.mariadb.rootPassword:}} myops"
 
+  postal:
+    target: deployment/worker
+    command: ./bin/postal
+
