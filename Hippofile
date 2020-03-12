@@ -5,6 +5,14 @@ images:
     name: adamcooke/postal
     tag: docker
 
-console:
- deployment: worker
- command: bundle exec rails console
+commands:
+  console:
+    target: deployment/worker
+    command: bundle exec rails console
+  bash:
+    target: deployment/worker
+    command: /bin/bash
+  mysql:
+    target: pod/mariadb-master-0
+    command: "mysql -u root -p{{secrets.mariadb.rootPassword:}} myops"
+

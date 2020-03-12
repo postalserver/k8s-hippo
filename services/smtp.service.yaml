@@ -3,7 +3,8 @@ apiVersion: v1
 metadata:
   name: smtp
   {% if config.smtpMetalLBAddressPool %}
-  metallb.universe.tf/address-pool: {{ config.smtpMetalLBAddressPool}}
+  annotations:
+    metallb.universe.tf/address-pool: {{ config.smtpMetalLBAddressPool}}
   {% endif %}
 spec:
   type: LoadBalancer
